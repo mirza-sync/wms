@@ -8,7 +8,7 @@ A Python script to calculate total revenue and identify the best-selling SKU fro
 
 ## How to Run
 
-1. Clone the repo
+1. Clone the repo:
 
    ```cmd
    > git clone https://github.com/mirza-sync/wms.git
