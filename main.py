@@ -13,14 +13,19 @@ def analyze_orders(file_path):
         with open(file_path, newline="") as csvfile:
             data = csv.reader(csvfile)
 
-            # Skip the first row (header)
-            next(data)
+            # Check header
+            if next(data, None) is None:
+                print("File is empty")
+                return None
 
             total_revenue = 0.0
             sold_item_count = {}
 
-            for i, row in enumerate(data):
+            for i, row in enumerate(data, start=2):
                 try:
+                    if len(row) < 4:
+                        raise ValueError("Missing columns")
+
                     sku = row[1].strip()
                     quantity = int(row[2])
                     price = float(row[3])
@@ -32,12 +37,17 @@ def analyze_orders(file_path):
                     revenue = (quantity) * (price)
                     total_revenue += revenue
 
-                    # Create new sku key if not exist in dict
+                    # Add sku, quantity to dict
                     sold_item_count[sku] = sold_item_count.get(sku, 0) + quantity
 
                 except (ValueError, KeyError, TypeError, AttributeError) as e:
                     print(f"Skipping row {i}: Invalid data ({e})")
                     continue
+
+            # Check if actually got data
+            if not sold_item_count:
+                print("No order data found")
+                return None
 
             # Find best-selling SKU
             best_sku = max(sold_item_count, key=sold_item_count.get)
@@ -56,7 +66,7 @@ def analyze_orders(file_path):
 
 
 if __name__ == "__main__":
-    FILENAME = "allsome_interview_test_orders-empty.csv"
+    FILENAME = "allsome_interview_test_orders.csv"
     output = analyze_orders(FILENAME)
 
     if output:
